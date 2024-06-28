@@ -1,0 +1,8 @@
+# prod_cluster - the name of prod cluster
+
+# for prometheus:
+storagesize = 300
+retentionPeriod = 14d
+
+# for grafana:
+hostname = ...

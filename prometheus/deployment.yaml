@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  namespace: NAMESPACE
+  labels:
+    app: prometheus-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-server
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+    spec:
+      restartPolicy: Always
+      initContainers:
+      - name: init-container
+        image: busybox:latest
+        command:
+        - chown
+        - -R
+        - 65534:65534
+        - /prometheus
+        volumeMounts:
+          - name: prometheus-storage
+            mountPath: /prometheus
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.37.9
+#ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPO:VERSION
+          args:
+            - --config.file=/etc/prometheus/prometheus.yaml
+            - --storage.tsdb.path=/prometheus/
+            - --storage.tsdb.retention.time=RETENTIONPERIOD
+          ports:
+            - containerPort: 9090
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500M
+            limits:
+              cpu: 1
+              memory: 1Gi
+          volumeMounts:
+            - name: prometheus-config-volume
+              mountPath: /etc/prometheus
+            - name: prometheus-storage
+              mountPath: /prometheus
+      volumes:
+        - name: prometheus-config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-server-conf
+        - name: prometheus-storage
+          persistentVolumeClaim:
+            claimName: prometheus-pvc
