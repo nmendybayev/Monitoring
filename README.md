@@ -2,6 +2,8 @@
 
 # Configuration for 'prod' and 'dev' Stages of the Monitoring-Alerting Solution Based on Prometheus and Grafana.
 
+![Monitoring-Prometheus](monitoring-stack.webp)
+
 This setup uses Bash scripts to create and push secrets into AWS Secrets Manager, and to pull them back into the Kubernetes environment. It also employs Kubernetes manifest files to create resources following Kubernetes best practices.
 
 
